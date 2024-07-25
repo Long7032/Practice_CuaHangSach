@@ -3,9 +3,13 @@ package com.example.demo.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.User;
-import com.example.demo.util.UserUtil;
+import com.example.demo.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,42 +23,59 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class UserController {
 
 	@Autowired
-	private UserUtil userUtil;
+	private UserRepository userRepository;
 
 	@PostMapping("/add")
 	public String addNewUser(@RequestBody User user) {
-		System.out.println("Data recieve from  request: " + user);
-		userUtil.save(user);
+		System.out.println("Data recieve from request: " + user);
+		userRepository.save(user);
 		return "success";
 	}
 
 	@GetMapping("/getAllUser")
 	public List<User> getAllUser() {
-		return userUtil.findAll();
+		return userRepository.findAll();
 	}
 
 	@GetMapping("/getUserByEmail")
-	public User getUserById(@RequestParam String email) {
-		System.out.println("Data receive from request: " + email);
-		System.out.println(userUtil.findUserByEmail(email));
-		return userUtil.findUserByEmail(email);
+	public User getUser(@RequestParam String data) {
+		System.out.println("Data receive from request: " + data);
+		System.out.println("User found in database: " + userRepository.findUserByEmail(data));
+		return userRepository.findUserByEmail(data);
 	}
 
-	@PostMapping("/updateUser")
-	public String updateUser(@RequestParam int id, @RequestBody User user) {
+	@PostMapping("/update")
+	public String updateUser(@RequestBody String data) throws JsonMappingException, JsonProcessingException {
 		// TODO: process POST request
-		userUtil.deleteById(id);
-		userUtil.save(user);
-		System.out.println("Update successfull");
-		return "Update user successful";
+		System.out.println("Data receive from request: " + data);
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		
+		Map<String, Object> map = objectMapper.readValue(data, Map.class);
+		System.out.println("Data after convert to Json to String is: " + map);
+		
+		// Step 1: Find user by email
+		User user = userRepository.findUserByEmail(String.valueOf(map.get("email")));
+		System.out.println("User found in database: " + user);
+		
+		// Step 2: Delete old user by email
+		userRepository.deleteById(user.getId());
+		// Step 3: Save new user
+		User newUser = new User(String.valueOf(map.get("name")), 
+				String.valueOf(map.get("birthday")), 
+				String.valueOf(map.get("gender")), 
+				String.valueOf(map.get("email")));
+		userRepository.save(newUser);
+		
+		return "success";
 	}
 
-	@PostMapping("/deleteuser")
+	@PostMapping("/delete")
 	public String deleteUser(@RequestParam int id) {
 		// TODO: process POST request
-		userUtil.deleteById(id);
+		userRepository.deleteById(id);
 		System.out.println("delete successful!!");
-		return "delete user by id";
+		return "success";
 	}
 
 }
