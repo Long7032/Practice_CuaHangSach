@@ -59,7 +59,7 @@ public class AccountController {
 		// Send the request
 		counter++;
 		System.out.println("Try saving user information " + counter);
-		
+
 		String response = restTemplate.postForObject("http://localhost:5821/users/add", entity, String.class);
 
 		System.out.println("Result of save user info is: " + response);
@@ -75,18 +75,35 @@ public class AccountController {
 	}
 
 	@PostMapping("/delete")
-	public String deleteAccountById(@RequestParam int id) {
+	public String deleteAccountById(@RequestBody Account account) {
 		// TODO: process POST request
-		accountRepository.deleteById(id);
-		return "delete success";
+		// Step 1: Find account by account and password
+		Account acc = null;
+		acc = accountRepository.findAccountByAccountAndPassWord(account.getAccount(), account.getPassword());
+		System.out.println("Account found in db: " + acc);
+
+		// Step 2: delete account
+		accountRepository.deleteById(acc.getId());
+		return "success";
 	}
 
 	@PostMapping("/update")
-	public String updateAccountById(@RequestParam int id, @RequestBody Account Account) {
+	public String changePassword(@RequestBody Account account, @RequestParam String newPassword) {
 		// TODO: process POST request
-		accountRepository.deleteById(id);
-		accountRepository.save(Account);
-		return "delete success";
+
+		// Step 1: Find account by account and password
+		Account acc = null;
+		acc = accountRepository.findAccountByAccountAndPassWord(account.getAccount(), account.getPassword());
+		System.out.println("Account found in db: " + acc);
+
+		// Step 2: delete account
+		accountRepository.deleteById(acc.getId());
+
+		// Step 3: save new account
+		Account newAccount = new Account(acc.getAccount(), newPassword);
+		accountRepository.save(newAccount);
+
+		return "success";
 	}
 
 	@GetMapping("/getAll")
