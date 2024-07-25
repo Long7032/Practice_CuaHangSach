@@ -37,7 +37,7 @@ public class UserController {
 	
 	@GetMapping("/getUserByEmail")
 	public User getUserById(@RequestParam String email) {
-		System.out.println("Request: " + email);
+		System.out.println("Data receive from request: " + email);
 		System.out.println(userUtil.findUserByEmail(email));
 		return userUtil.findUserByEmail(email);
 	}

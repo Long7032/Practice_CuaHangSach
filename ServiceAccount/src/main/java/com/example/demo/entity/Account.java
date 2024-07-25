@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,18 +13,19 @@ public class Account {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
+	@Column(unique = true, nullable = false)
 	private String account;
+	@Column(nullable = false)
 	private String password;
-	private int idUser;
 	public Account() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public Account(String account, String password, int idUser) {
+	public Account(String account, String password) {
 		super();
 		this.account = account;
 		this.password = password;
-		this.idUser = idUser;
+	
 	}
 	public int getId() {
 		return id;
@@ -43,15 +45,10 @@ public class Account {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public int getIdUser() {
-		return idUser;
-	}
-	public void setIdUser(int idUser) {
-		this.idUser = idUser;
-	}
+
 	@Override
 	public String toString() {
-		return "Account [id=" + id + ", account=" + account + ", password=" + password + ", idUser=" + idUser + "]";
+		return "Account [id=" + id + ", account=" + account + ", password=" + password;
 	}
 	
 	
