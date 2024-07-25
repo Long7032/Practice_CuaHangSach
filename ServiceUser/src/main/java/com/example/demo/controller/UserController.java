@@ -51,6 +51,7 @@ public class UserController {
 		
 		ObjectMapper objectMapper = new ObjectMapper();
 		
+		@SuppressWarnings("unchecked")
 		Map<String, Object> map = objectMapper.readValue(data, Map.class);
 		System.out.println("Data after convert to Json to String is: " + map);
 		

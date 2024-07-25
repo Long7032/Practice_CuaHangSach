@@ -17,8 +17,10 @@ public class Product {
 	private String nameAuthor;
 	private String namePublisher;
 	private int page;
-	public Product(String iSBN, String name, String nameAuthor, String namePublisher, int page) {
+
+	public Product(int id, String iSBN, String name, String nameAuthor, String namePublisher, int page) {
 		super();
+		this.id = id;
 		ISBN = iSBN;
 		this.name = name;
 		this.nameAuthor = nameAuthor;

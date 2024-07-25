@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping(name = "product")
+@RequestMapping("/product")
 public class ProductController {
 	@Autowired
 	private ProductRepository productRepository;
@@ -26,7 +26,7 @@ public class ProductController {
 	public String addProduct(@RequestBody Product product) {
 		//TODO: process POST request
 		productRepository.save(product);
-		return "add successful";
+		return "success";
 	}
 
 	@PostMapping("/delete")
