@@ -1,0 +1,18 @@
+package com.example.demo.entity;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "products")
+public class Product {
+	
+	private int id;
+	private String ISBN;
+	private String name;
+	private String nameAuthor;
+	private String namePublisher;
+	private int page;
+	
+
+}

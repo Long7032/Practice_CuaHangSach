@@ -1,0 +1,30 @@
+
+  
+spring: 
+  cloud:
+    gateway:
+      routes:
+        - id: ProductService
+          uri: http://localhost:5820
+          predicates:
+            - Path=/api/v1/**         
+        - id: UserService
+          uri: http://localhost:5821
+          predicates:
+            - Path=/api/v2/**
+        - id: AccountService
+          uri: http://localhost:5822
+          predicates:
+            - Path=/api/v3/**
+        - id: OrderService
+          uri: http://localhost:5823
+          predicates:
+            - Path=/api/v4/**
+        - id: OrderDetailServer
+          uri: http://localhost:5824
+          predicates:
+            - Path=/api/v5/**
+        - id: DemoCircuitBreakerService
+          uri: http://localhost:5830
+          predicates:
+            - Path=/api/d1/**

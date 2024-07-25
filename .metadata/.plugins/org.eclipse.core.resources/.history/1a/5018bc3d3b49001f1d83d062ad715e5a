@@ -1,0 +1,11 @@
+
+  
+spring: 
+  cloud:
+    gateway:
+      routes:
+        - id: UserService
+          uri: http://localhost:5822/users
+          predicates:
+            - Path=/api/v2/**
+       

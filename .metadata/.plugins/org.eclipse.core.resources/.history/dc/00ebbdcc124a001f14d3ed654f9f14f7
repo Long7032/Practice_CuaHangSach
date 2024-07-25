@@ -1,0 +1,11 @@
+package com.example.demo.util;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import com.example.demo.entity.User;
+
+public interface UserUtil extends JpaRepository<User, Integer>{
+	@Query("SELECT u FROM User u WHERE u.userId = ?1")
+	public User findUserByEmail(int email);
+}
