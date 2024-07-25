@@ -1,9 +1,12 @@
 package com.example.demo.controller;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,22 +19,59 @@ import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.entity.Account;
 import com.example.demo.repository.AccountRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 
 @RestController
-@RequestMapping(name = "account")
+@RequestMapping("/account")
 public class AccountController {
+
+	private int counter = 0;
 	@Autowired
 	private AccountRepository accountRepository;
 	@Autowired
 	private RestTemplate restTemplate;
 
-	@PostMapping("/add")
-	public String addAccount(@RequestBody Account Account) {
+	@PostMapping("/register")
+	@Retryable(maxAttempts = 3, backoff = @Backoff(delay = 3000))
+	public String addAccount(@RequestBody String data) throws JsonMappingException, JsonProcessingException {
 		// TODO: process POST request
-		accountRepository.save(Account);
-		return "add successful";
+		System.out.println("Data recieve from request: " + data);
+
+		// Convert data Json to data type Map
+		ObjectMapper objectMapper = new ObjectMapper();
+		@SuppressWarnings("unchecked")
+		Map<String, Object> map = objectMapper.readValue(data, Map.class);
+		System.out.println("Data after convert to Json to String is: " + map);
+
+		// Step 1: Save user info
+
+		// Set the headers
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		// Create the HttpEntity
+		HttpEntity<String> entity = new HttpEntity<>(data, headers);
+
+		// Send the request
+		counter++;
+		System.out.println("Try saving user information " + counter);
+		
+		String response = restTemplate.postForObject("http://localhost:5821/users/add", entity, String.class);
+
+		System.out.println("Result of save user info is: " + response);
+
+		// Step 2: Save account
+		if (response.equalsIgnoreCase("success")) {
+			Account acc = new Account(String.valueOf(map.get("email")), String.valueOf(map.get("password")));
+			accountRepository.save(acc);
+			counter = 0;
+			return "success";
+		}
+		return "fail";
 	}
 
 	@PostMapping("/delete")
@@ -60,18 +100,19 @@ public class AccountController {
 	@Retryable(maxAttempts = 3, backoff = @Backoff(delay = 1000))
 	public String login(@RequestBody Account account) {
 		// TODO: process POST request
-		System.out.println("Data recieve from client: " + account);
-		
+		System.out.println("Data recieve from request: " + account);
+
 		Account acc = null;
-		
+
 		// Step 1: Find account in data base
 		acc = accountRepository.findAccountByAccountAndPassWord(account.getAccount(), account.getPassword());
 		System.out.println("Account found in db: " + acc);
-	
+
 		// Step 2: Find user information in database by email
 		String userInfo = null;
-		if(acc != null) {
-			userInfo = restTemplate.getForObject("http://localhost:8522/users/getUserByEmail?email=" + account.getAccount(), String.class);
+		if (acc != null) {
+			userInfo = restTemplate.getForObject(
+					"http://localhost:5821/users/getUserByEmail?email=" + account.getAccount(), String.class);
 			System.out.println("User found in db: " + userInfo);
 		}
 		return userInfo;

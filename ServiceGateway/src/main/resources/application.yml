@@ -7,3 +7,8 @@ spring:
           predicates:
             - Path=/users/**
        
+        - id: accountService
+          uri: http://localhost:8524
+          predicates:
+            - Path=/account/**
+       
