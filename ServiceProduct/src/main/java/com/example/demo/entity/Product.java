@@ -27,6 +27,18 @@ public class Product {
 		this.namePublisher = namePublisher;
 		this.page = page;
 	}
+	
+	
+	public Product(String iSBN, String name, String nameAuthor, String namePublisher, int page) {
+		super();
+		ISBN = iSBN;
+		this.name = name;
+		this.nameAuthor = nameAuthor;
+		this.namePublisher = namePublisher;
+		this.page = page;
+	}
+
+
 	public Product() {
 		super();
 		// TODO Auto-generated constructor stub

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @RequestMapping("/product")
 public class ProductController {
@@ -24,34 +23,45 @@ public class ProductController {
 
 	@PostMapping("/add")
 	public String addProduct(@RequestBody Product product) {
-		//TODO: process POST request
+		// TODO: process POST request
+
+		System.out.println("Data receive from request: " + product);
 		productRepository.save(product);
 		return "success";
 	}
 
 	@PostMapping("/delete")
-	public String deleteProductById(@RequestParam int id) {
-		//TODO: process POST request
-		productRepository.deleteById(id);
-		return "delete success";
+	public String deleteProduct(@RequestBody Product data) {
+		// TODO: process POST request
+		System.out.println("Data receive from request: " + data);
+
+		// Step 1: Find the information book by ISBN
+		Product p = null;
+		p = productRepository.getProductByISBN(data.getISBN());
+		System.out.println("Product found in database: " + p);
+		// Step 2: Delete the book by id
+		productRepository.deleteById(p.getId());
+
+		return "success";
 	}
 
 	@PostMapping("/update")
 	public String updateProductById(@RequestParam int id, @RequestBody Product product) {
-		//TODO: process POST request
+		// TODO: process POST request
 		productRepository.deleteById(id);
 		productRepository.save(product);
 		return "delete success";
 	}
+
 	@GetMapping("/getAll")
 	public List<Product> getAllProduct() {
-		//TODO: process POST request
+		// TODO: process POST request
 		return productRepository.findAll();
 	}
 
 	@PostMapping("/getById")
 	public Optional<Product> getAllProduct(@RequestParam int id) {
-		//TODO: process POST request
+		// TODO: process POST request
 		return productRepository.findById(id);
 	}
 }
