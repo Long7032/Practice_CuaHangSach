@@ -46,11 +46,24 @@ public class ProductController {
 	}
 
 	@PostMapping("/update")
-	public String updateProductById(@RequestParam int id, @RequestBody Product product) {
+	public String updateProduct(@RequestBody Product data) {
 		// TODO: process POST request
-		productRepository.deleteById(id);
-		productRepository.save(product);
-		return "delete success";
+		System.out.println("Data receive from request: " + data);
+
+		// Step 1: Find product by ISBN
+		Product p = null;
+		p = productRepository.getProductByISBN(data.getISBN());
+
+		// Step 2: Delete product by id
+		if(p != null) {
+			productRepository.deleteById(p.getId());
+
+			// Step 3: Save new product in database
+			productRepository.save(data);
+			
+			return "success";
+		}
+		return "fail";
 	}
 
 	@GetMapping("/getAll")
