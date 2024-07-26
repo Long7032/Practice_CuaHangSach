@@ -1,11 +1,9 @@
 package com.example.demo.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.Product;
@@ -55,12 +53,12 @@ public class ProductController {
 		p = productRepository.getProductByISBN(data.getISBN());
 
 		// Step 2: Delete product by id
-		if(p != null) {
+		if (p != null) {
 			productRepository.deleteById(p.getId());
 
 			// Step 3: Save new product in database
 			productRepository.save(data);
-			
+
 			return "success";
 		}
 		return "fail";
@@ -72,9 +70,9 @@ public class ProductController {
 		return productRepository.findAll();
 	}
 
-	@PostMapping("/getById")
-	public Optional<Product> getAllProduct(@RequestParam int id) {
+	@PostMapping("/getProduct")
+	public Product getProductByISBN(@RequestBody Product p) {
 		// TODO: process POST request
-		return productRepository.findById(id);
+		return productRepository.getProductByISBN(p.getISBN());
 	}
 }
